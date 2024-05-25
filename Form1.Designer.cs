@@ -53,19 +53,28 @@ namespace Time_Tracker
             this.panel3 = new System.Windows.Forms.Panel();
             this.projectsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.projectsTableAdapter = new Time_Tracker.DataSet1TableAdapters.ProjectsTableAdapter();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.MonthLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.DayLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.mainPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.TasksPanel = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.NotesPanel = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.TabPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.CalendarButton = new System.Windows.Forms.FlowLayoutPanel();
+            this.CalendarButtonText = new System.Windows.Forms.Label();
+            this.TasksButton = new System.Windows.Forms.FlowLayoutPanel();
+            this.TasksButtonText = new System.Windows.Forms.Label();
+            this.NotesButton = new System.Windows.Forms.FlowLayoutPanel();
+            this.NotesButtonText = new System.Windows.Forms.Label();
+            this.ManageUsersButton = new System.Windows.Forms.FlowLayoutPanel();
+            this.ManageUsersButtonText = new System.Windows.Forms.Label();
+            this.CalendarPanel = new System.Windows.Forms.Panel();
+            this.MainWindow = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -73,20 +82,19 @@ namespace Time_Tracker
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.MonthLayoutPanel.SuspendLayout();
+            this.DayLayoutPanel.SuspendLayout();
+            this.TasksPanel.SuspendLayout();
+            this.NotesPanel.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
+            this.TabPanel.SuspendLayout();
+            this.CalendarButton.SuspendLayout();
+            this.TasksButton.SuspendLayout();
+            this.NotesButton.SuspendLayout();
+            this.ManageUsersButton.SuspendLayout();
+            this.CalendarPanel.SuspendLayout();
+            this.MainWindow.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -219,7 +227,7 @@ namespace Time_Tracker
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(312, 63);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(533, 63);
             this.flowLayoutPanel1.TabIndex = 23;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -253,11 +261,11 @@ namespace Time_Tracker
             this.mainPanel2.AutoScroll = true;
             this.mainPanel2.AutoSize = true;
             this.mainPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel2.Location = new System.Drawing.Point(3, 62);
+            this.mainPanel2.Location = new System.Drawing.Point(3, 27);
             this.mainPanel2.MinimumSize = new System.Drawing.Size(200, 200);
             this.mainPanel2.Name = "mainPanel2";
             this.mainPanel2.Padding = new System.Windows.Forms.Padding(40);
-            this.mainPanel2.Size = new System.Drawing.Size(456, 446);
+            this.mainPanel2.Size = new System.Drawing.Size(239, 200);
             this.mainPanel2.TabIndex = 0;
             // 
             // groupBox1
@@ -275,86 +283,75 @@ namespace Time_Tracker
             // panel3
             // 
             this.panel3.AutoScroll = true;
-            this.panel3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.panel3.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.panel3.Controls.Add(this.groupBox1);
             this.panel3.Controls.Add(this.panel1);
             this.panel3.Controls.Add(this.TodayBtn);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel3.Location = new System.Drawing.Point(0, 571);
+            this.panel3.Location = new System.Drawing.Point(0, 265);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(462, 117);
+            this.panel3.Size = new System.Drawing.Size(488, 110);
             this.panel3.TabIndex = 24;
             // 
             // projectsTableAdapter
             // 
             this.projectsTableAdapter.ClearBeforeFill = true;
             // 
-            // splitContainer1
+            // MonthLayoutPanel
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 69);
-            this.splitContainer1.Name = "splitContainer1";
+            this.MonthLayoutPanel.ColumnCount = 1;
+            this.MonthLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.MonthLayoutPanel.Controls.Add(this.mainPanel2, 0, 1);
+            this.MonthLayoutPanel.Enabled = false;
+            this.MonthLayoutPanel.Location = new System.Drawing.Point(243, 3);
+            this.MonthLayoutPanel.Name = "MonthLayoutPanel";
+            this.MonthLayoutPanel.RowCount = 3;
+            this.MonthLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.39F));
+            this.MonthLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 79.22F));
+            this.MonthLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.39F));
+            this.MonthLayoutPanel.Size = new System.Drawing.Size(245, 235);
+            this.MonthLayoutPanel.TabIndex = 25;
+            this.MonthLayoutPanel.Visible = false;
             // 
-            // splitContainer1.Panel1
+            // DayLayoutPanel
             // 
-            this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel4);
-            this.splitContainer1.Panel1.Controls.Add(this.panel3);
-            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel3);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1477, 690);
-            this.splitContainer1.SplitterDistance = 464;
-            this.splitContainer1.TabIndex = 26;
+            this.DayLayoutPanel.ColumnCount = 1;
+            this.DayLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.DayLayoutPanel.Controls.Add(this.mainPanel, 0, 1);
+            this.DayLayoutPanel.Location = new System.Drawing.Point(3, 3);
+            this.DayLayoutPanel.Name = "DayLayoutPanel";
+            this.DayLayoutPanel.RowCount = 3;
+            this.DayLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DayLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 220F));
+            this.DayLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.DayLayoutPanel.Size = new System.Drawing.Size(234, 256);
+            this.DayLayoutPanel.TabIndex = 25;
             // 
             // mainPanel
             // 
             this.mainPanel.AutoScroll = true;
             this.mainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainPanel.Location = new System.Drawing.Point(0, 234);
+            this.mainPanel.Location = new System.Drawing.Point(0, 18);
             this.mainPanel.Margin = new System.Windows.Forms.Padding(0);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(462, 220);
+            this.mainPanel.Size = new System.Drawing.Size(234, 220);
             this.mainPanel.TabIndex = 15;
             this.mainPanel.WrapContents = false;
             // 
-            // splitContainer2
+            // TasksPanel
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.tableLayoutPanel1);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.tableLayoutPanel2);
-            this.splitContainer2.Size = new System.Drawing.Size(1007, 688);
-            this.splitContainer2.SplitterDistance = 568;
-            this.splitContainer2.TabIndex = 26;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel4, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(568, 688);
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.TasksPanel.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.TasksPanel.ColumnCount = 1;
+            this.TasksPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.TasksPanel.Controls.Add(this.flowLayoutPanel4, 0, 1);
+            this.TasksPanel.Controls.Add(this.label2, 0, 0);
+            this.TasksPanel.Location = new System.Drawing.Point(58, 26);
+            this.TasksPanel.Name = "TasksPanel";
+            this.TasksPanel.RowCount = 2;
+            this.TasksPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.TasksPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.TasksPanel.Size = new System.Drawing.Size(245, 225);
+            this.TasksPanel.TabIndex = 0;
             // 
             // flowLayoutPanel4
             // 
@@ -365,7 +362,7 @@ namespace Time_Tracker
             this.flowLayoutPanel4.Location = new System.Drawing.Point(20, 72);
             this.flowLayoutPanel4.Margin = new System.Windows.Forms.Padding(20, 20, 20, 3);
             this.flowLayoutPanel4.Name = "flowLayoutPanel4";
-            this.flowLayoutPanel4.Size = new System.Drawing.Size(528, 613);
+            this.flowLayoutPanel4.Size = new System.Drawing.Size(205, 150);
             this.flowLayoutPanel4.TabIndex = 0;
             // 
             // label2
@@ -375,26 +372,25 @@ namespace Time_Tracker
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.label2.Location = new System.Drawing.Point(3, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(562, 52);
+            this.label2.Size = new System.Drawing.Size(239, 52);
             this.label2.TabIndex = 1;
             this.label2.Text = "Tasks";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // tableLayoutPanel2
+            // NotesPanel
             // 
-            this.tableLayoutPanel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.tableLayoutPanel2.ColumnCount = 1;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.flowLayoutPanel3, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label3, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(435, 688);
-            this.tableLayoutPanel2.TabIndex = 0;
+            this.NotesPanel.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.NotesPanel.ColumnCount = 1;
+            this.NotesPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.NotesPanel.Controls.Add(this.flowLayoutPanel3, 0, 1);
+            this.NotesPanel.Controls.Add(this.label3, 0, 0);
+            this.NotesPanel.Location = new System.Drawing.Point(328, 23);
+            this.NotesPanel.Name = "NotesPanel";
+            this.NotesPanel.RowCount = 2;
+            this.NotesPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.NotesPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.NotesPanel.Size = new System.Drawing.Size(237, 225);
+            this.NotesPanel.TabIndex = 0;
             // 
             // flowLayoutPanel3
             // 
@@ -405,7 +401,7 @@ namespace Time_Tracker
             this.flowLayoutPanel3.Location = new System.Drawing.Point(20, 72);
             this.flowLayoutPanel3.Margin = new System.Windows.Forms.Padding(20, 20, 20, 3);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(395, 613);
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(197, 150);
             this.flowLayoutPanel3.TabIndex = 3;
             // 
             // label3
@@ -415,7 +411,7 @@ namespace Time_Tracker
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.label3.Location = new System.Drawing.Point(3, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(429, 52);
+            this.label3.Size = new System.Drawing.Size(231, 52);
             this.label3.TabIndex = 2;
             this.label3.Text = "Notes";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -427,53 +423,21 @@ namespace Time_Tracker
             this.flowLayoutPanel2.Controls.Add(this.label7);
             this.flowLayoutPanel2.Controls.Add(this.comboBox1);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(312, 0);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(533, 0);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(420, 63);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(617, 63);
             this.flowLayoutPanel2.TabIndex = 22;
             this.flowLayoutPanel2.WrapContents = false;
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 1;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.mainPanel, 0, 1);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 220F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(462, 688);
-            this.tableLayoutPanel3.TabIndex = 25;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Controls.Add(this.mainPanel2, 0, 1);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Enabled = false;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 3;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.39F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 79.22F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.39F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(462, 571);
-            this.tableLayoutPanel4.TabIndex = 25;
-            this.tableLayoutPanel4.Visible = false;
             // 
             // tableLayoutPanel5
             // 
             this.tableLayoutPanel5.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.tableLayoutPanel5.ColumnCount = 3;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.62774F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 57.37226F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 744F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.35317F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.64683F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 636F));
             this.tableLayoutPanel5.Controls.Add(this.flowLayoutPanel1, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.flowLayoutPanel2, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Top;
@@ -481,16 +445,150 @@ namespace Time_Tracker
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 1;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(1477, 63);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(1787, 63);
             this.tableLayoutPanel5.TabIndex = 27;
+            // 
+            // TabPanel
+            // 
+            this.TabPanel.AutoScroll = true;
+            this.TabPanel.AutoSize = true;
+            this.TabPanel.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.TabPanel.Controls.Add(this.CalendarButton);
+            this.TabPanel.Controls.Add(this.TasksButton);
+            this.TabPanel.Controls.Add(this.NotesButton);
+            this.TabPanel.Controls.Add(this.ManageUsersButton);
+            this.TabPanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.TabPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.TabPanel.Location = new System.Drawing.Point(0, 63);
+            this.TabPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.TabPanel.Name = "TabPanel";
+            this.TabPanel.Size = new System.Drawing.Size(263, 951);
+            this.TabPanel.TabIndex = 29;
+            // 
+            // CalendarButton
+            // 
+            this.CalendarButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CalendarButton.Controls.Add(this.CalendarButtonText);
+            this.CalendarButton.Location = new System.Drawing.Point(0, 0);
+            this.CalendarButton.Margin = new System.Windows.Forms.Padding(0);
+            this.CalendarButton.Name = "CalendarButton";
+            this.CalendarButton.Padding = new System.Windows.Forms.Padding(10);
+            this.CalendarButton.Size = new System.Drawing.Size(263, 56);
+            this.CalendarButton.TabIndex = 30;
+            this.CalendarButton.Click += new System.EventHandler(this.CalendarButton_Click);
+            // 
+            // CalendarButtonText
+            // 
+            this.CalendarButtonText.AutoSize = true;
+            this.CalendarButtonText.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.CalendarButtonText.Location = new System.Drawing.Point(13, 13);
+            this.CalendarButtonText.Margin = new System.Windows.Forms.Padding(3);
+            this.CalendarButtonText.Name = "CalendarButtonText";
+            this.CalendarButtonText.Padding = new System.Windows.Forms.Padding(3);
+            this.CalendarButtonText.Size = new System.Drawing.Size(169, 32);
+            this.CalendarButtonText.TabIndex = 0;
+            this.CalendarButtonText.Text = "CalendarButton";
+            this.CalendarButtonText.Click += new System.EventHandler(this.CalendarButton_Click);
+            // 
+            // TasksButton
+            // 
+            this.TasksButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.TasksButton.Controls.Add(this.TasksButtonText);
+            this.TasksButton.Location = new System.Drawing.Point(0, 56);
+            this.TasksButton.Margin = new System.Windows.Forms.Padding(0);
+            this.TasksButton.Name = "TasksButton";
+            this.TasksButton.Padding = new System.Windows.Forms.Padding(10);
+            this.TasksButton.Size = new System.Drawing.Size(263, 56);
+            this.TasksButton.TabIndex = 31;
+            this.TasksButton.Click += new System.EventHandler(this.TasksButton_Click);
+            // 
+            // TasksButtonText
+            // 
+            this.TasksButtonText.AutoSize = true;
+            this.TasksButtonText.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.TasksButtonText.Location = new System.Drawing.Point(13, 13);
+            this.TasksButtonText.Margin = new System.Windows.Forms.Padding(3);
+            this.TasksButtonText.Name = "TasksButtonText";
+            this.TasksButtonText.Padding = new System.Windows.Forms.Padding(3);
+            this.TasksButtonText.Size = new System.Drawing.Size(138, 32);
+            this.TasksButtonText.TabIndex = 0;
+            this.TasksButtonText.Text = "TasksButton";
+            // 
+            // NotesButton
+            // 
+            this.NotesButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.NotesButton.Controls.Add(this.NotesButtonText);
+            this.NotesButton.Location = new System.Drawing.Point(0, 112);
+            this.NotesButton.Margin = new System.Windows.Forms.Padding(0);
+            this.NotesButton.Name = "NotesButton";
+            this.NotesButton.Padding = new System.Windows.Forms.Padding(10);
+            this.NotesButton.Size = new System.Drawing.Size(263, 56);
+            this.NotesButton.TabIndex = 31;
+            this.NotesButton.Click += new System.EventHandler(this.NotesButton_Click);
+            // 
+            // NotesButtonText
+            // 
+            this.NotesButtonText.AutoSize = true;
+            this.NotesButtonText.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.NotesButtonText.Location = new System.Drawing.Point(13, 13);
+            this.NotesButtonText.Margin = new System.Windows.Forms.Padding(3);
+            this.NotesButtonText.Name = "NotesButtonText";
+            this.NotesButtonText.Padding = new System.Windows.Forms.Padding(3);
+            this.NotesButtonText.Size = new System.Drawing.Size(138, 32);
+            this.NotesButtonText.TabIndex = 0;
+            this.NotesButtonText.Text = "NotesButton";
+            // 
+            // ManageUsersButton
+            // 
+            this.ManageUsersButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ManageUsersButton.Controls.Add(this.ManageUsersButtonText);
+            this.ManageUsersButton.Location = new System.Drawing.Point(0, 168);
+            this.ManageUsersButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ManageUsersButton.Name = "ManageUsersButton";
+            this.ManageUsersButton.Padding = new System.Windows.Forms.Padding(10);
+            this.ManageUsersButton.Size = new System.Drawing.Size(263, 56);
+            this.ManageUsersButton.TabIndex = 31;
+            // 
+            // ManageUsersButtonText
+            // 
+            this.ManageUsersButtonText.AutoSize = true;
+            this.ManageUsersButtonText.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.ManageUsersButtonText.Location = new System.Drawing.Point(13, 13);
+            this.ManageUsersButtonText.Margin = new System.Windows.Forms.Padding(3);
+            this.ManageUsersButtonText.Name = "ManageUsersButtonText";
+            this.ManageUsersButtonText.Padding = new System.Windows.Forms.Padding(3);
+            this.ManageUsersButtonText.Size = new System.Drawing.Size(216, 32);
+            this.ManageUsersButtonText.TabIndex = 0;
+            this.ManageUsersButtonText.Text = "ManageUsersButton";
+            // 
+            // CalendarPanel
+            // 
+            this.CalendarPanel.Controls.Add(this.panel3);
+            this.CalendarPanel.Controls.Add(this.DayLayoutPanel);
+            this.CalendarPanel.Controls.Add(this.MonthLayoutPanel);
+            this.CalendarPanel.Location = new System.Drawing.Point(27, 270);
+            this.CalendarPanel.Name = "CalendarPanel";
+            this.CalendarPanel.Size = new System.Drawing.Size(488, 375);
+            this.CalendarPanel.TabIndex = 29;
+            // 
+            // MainWindow
+            // 
+            this.MainWindow.Controls.Add(this.TasksPanel);
+            this.MainWindow.Controls.Add(this.CalendarPanel);
+            this.MainWindow.Controls.Add(this.NotesPanel);
+            this.MainWindow.Location = new System.Drawing.Point(1044, 149);
+            this.MainWindow.Name = "MainWindow";
+            this.MainWindow.Size = new System.Drawing.Size(641, 612);
+            this.MainWindow.TabIndex = 30;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1477, 759);
+            this.ClientSize = new System.Drawing.Size(1787, 1014);
+            this.Controls.Add(this.MainWindow);
+            this.Controls.Add(this.TabPanel);
             this.Controls.Add(this.tableLayoutPanel5);
-            this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(400, 400);
             this.Name = "Form1";
             this.Text = "Time Tracker";
@@ -504,25 +602,29 @@ namespace Time_Tracker
             this.groupBox1.PerformLayout();
             this.panel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource)).EndInit();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
+            this.MonthLayoutPanel.ResumeLayout(false);
+            this.MonthLayoutPanel.PerformLayout();
+            this.DayLayoutPanel.ResumeLayout(false);
+            this.TasksPanel.ResumeLayout(false);
+            this.TasksPanel.PerformLayout();
+            this.NotesPanel.ResumeLayout(false);
+            this.NotesPanel.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel5.ResumeLayout(false);
+            this.TabPanel.ResumeLayout(false);
+            this.CalendarButton.ResumeLayout(false);
+            this.CalendarButton.PerformLayout();
+            this.TasksButton.ResumeLayout(false);
+            this.TasksButton.PerformLayout();
+            this.NotesButton.ResumeLayout(false);
+            this.NotesButton.PerformLayout();
+            this.ManageUsersButton.ResumeLayout(false);
+            this.ManageUsersButton.PerformLayout();
+            this.CalendarPanel.ResumeLayout(false);
+            this.MainWindow.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -549,19 +651,28 @@ namespace Time_Tracker
         private DataSet1 dataSet1;
         private BindingSource projectsBindingSource1;
         private DataSet1TableAdapters.ProjectsTableAdapter projectsTableAdapter;
-        private SplitContainer splitContainer1;
         private FlowLayoutPanel flowLayoutPanel2;
-        private SplitContainer splitContainer2;
         private Label label2;
         private FlowLayoutPanel flowLayoutPanel4;
-        private TableLayoutPanel tableLayoutPanel1;
-        private TableLayoutPanel tableLayoutPanel2;
+        private TableLayoutPanel TasksPanel;
+        private TableLayoutPanel NotesPanel;
         private FlowLayoutPanel flowLayoutPanel3;
         private Label label3;
         private FlowLayoutPanel mainPanel;
-        private TableLayoutPanel tableLayoutPanel3;
-        private TableLayoutPanel tableLayoutPanel4;
+        private TableLayoutPanel DayLayoutPanel;
+        private TableLayoutPanel MonthLayoutPanel;
         private TableLayoutPanel tableLayoutPanel5;
+        private FlowLayoutPanel TabPanel;
+        private Panel CalendarPanel;
+        private FlowLayoutPanel CalendarButton;
+        private Label CalendarButtonText;
+        private FlowLayoutPanel TasksButton;
+        private Label TasksButtonText;
+        private FlowLayoutPanel NotesButton;
+        private Label NotesButtonText;
+        private FlowLayoutPanel ManageUsersButton;
+        private Label ManageUsersButtonText;
+        private Panel MainWindow;
     }
 }
 

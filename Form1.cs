@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.Odbc;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Time_Tracker
 {
@@ -22,7 +14,8 @@ namespace Time_Tracker
         //
         //preset data
         private static DateTime Today_date = DateTime.Now;
-        OdbcConnection connection = new OdbcConnection("Driver = {MICROSOFT ACCESS DRIVER (*.mdb, *.accdb)}; Dsn=Enterprise_DB;");
+        private static string connectionString = "Driver={MICROSOFT ACCESS DRIVER (*.mdb, *.accdb)}; Dsn=Enterprise_DB;dbq=D:\\Навчання\\4 курс\\Диплом\\Project\\Main_Base\\enterprise.accdb;driverid=25;fil=MS Access;maxbuffersize=2048;pagetimeout=5";
+        OdbcConnection connection = new OdbcConnection(connectionString);
         private DateTime startDate = new DateTime(Today_date.Year, Today_date.Month, 1); // Default start date
         private DateTime endDate = new DateTime(Today_date.Year, (Today_date.Month + 1), 1).AddDays(-1); // Default end date
         public static DateTime SelectedCellDate;
@@ -56,15 +49,14 @@ namespace Time_Tracker
 
         //
         //create cells Form-1 cells row
-        private void CreateDynamicCells(DateTime startDate, DateTime? endDate)
+
+        private async Task PopulateDynamicCellsAsync(DateTime startDate, DateTime? endDate, string projectName)
         {
-            //clear panel before populating
             ClearDynamicCells();
             var daysInMonth = DateTime.DaysInMonth(startDate.Year, startDate.Month);
-            var end = endDate ?? new DateTime(startDate.Year, startDate.Month, daysInMonth);
+            var end = endDate.HasValue ? endDate.Value : new DateTime(startDate.Year, startDate.Month, daysInMonth);
             var totalDays = (end - startDate).Days + 1;
 
-            // Create a FlowLayoutPanel to hold all cells horizontally
             FlowLayoutPanel flowPanel = new FlowLayoutPanel
             {
                 FlowDirection = FlowDirection.LeftToRight,
@@ -74,94 +66,252 @@ namespace Time_Tracker
                 Dock = DockStyle.Fill
             };
 
-            for (int i = 0; i < totalDays; i++)
+            try
             {
-                var date = startDate.AddDays(i);
+                var workTimes = FetchWorkTimes(projectName);
 
-                // Create a FlowLayoutPanel for each cell
-                FlowLayoutPanel cellPanel = new FlowLayoutPanel
+                for (int i = 0; i < totalDays; i++)
                 {
-                    FlowDirection = FlowDirection.TopDown,
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Width = 110,
-                    Height = 180,
-                    Margin = new Padding(5),
-                    Tag = new { CellOpend = false, CellDate = date } // To keep track of expanded state
-                };                
+                    var date = startDate.AddDays(i);
 
-                // Date label
-                Label lblDate = new Label
-                {
-                    Text = date.ToString("dd"),
-                    Anchor = AnchorStyles.Top,
-                    Padding = new Padding(5),
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Microsoft Sans Serif", 18, FontStyle.Bold),
-                    AutoSize = true,
-                    Tag = new { CellDate = date },
-                };
-                cellPanel.Controls.Add(lblDate);
-
-                // Day of the week label
-                Label lblDayOfWeek = new Label
-                {
-                    Text = date.ToString("ddd", CultureInfo.InvariantCulture),
-                    Anchor = AnchorStyles.Top,
-                    Padding = new Padding(5),
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Microsoft Sans Serif", 18, FontStyle.Bold),
-                    AutoSize = true,
-                    Tag = new { CellDate = date },
-                };
-                cellPanel.Controls.Add(lblDayOfWeek);
-
-                // TextBox for number entry
-                TextBox txtNumber = new TextBox
-                {
-                    Width = 50,
-                    Anchor = AnchorStyles.Top,
-                    Margin = new Padding(5),
-                    TextAlign = HorizontalAlignment.Center,
-                    Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
-                    Tag = new { CellDate = date },
-                };
-                if (date > DateTime.Now)
-                {
-                    txtNumber.Enabled = false;
-                    txtNumber.BackColor = Color.LightGray;
-                    txtNumber.BorderStyle = BorderStyle.None;
-                }
-                txtNumber.KeyPress += (sender, e) =>
-                {
-                    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.' && e.KeyChar != '-')
+                    FlowLayoutPanel cellPanel = new FlowLayoutPanel
                     {
-                        e.Handled = true;
+                        FlowDirection = FlowDirection.TopDown,
+                        BorderStyle = BorderStyle.FixedSingle,
+                        Width = 110,
+                        Height = 180,
+                        Margin = new Padding(5),
+                        Tag = new { CellOpend = false, CellDate = date }
+                    };
+
+                    Label lblDate = new Label
+                    {
+                        Text = date.ToString("dd"),
+                        Anchor = AnchorStyles.Top,
+                        Padding = new Padding(5),
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Microsoft Sans Serif", 18, FontStyle.Bold),
+                        AutoSize = true,
+                        Tag = new { CellDate = date },
+                    };
+                    cellPanel.Controls.Add(lblDate);
+
+                    Label lblDayOfWeek = new Label
+                    {
+                        Text = date.ToString("ddd", CultureInfo.InvariantCulture),
+                        Anchor = AnchorStyles.Top,
+                        Padding = new Padding(5),
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Microsoft Sans Serif", 18, FontStyle.Bold),
+                        AutoSize = true,
+                        Tag = new { CellDate = date },
+                    };
+                    cellPanel.Controls.Add(lblDayOfWeek);
+
+                    TextBox txtNumber = new TextBox
+                    {
+                        Width = 50,
+                        Anchor = AnchorStyles.Top,
+                        Margin = new Padding(5),
+                        TextAlign = HorizontalAlignment.Center,
+                        Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
+                        Tag = new { CellDate = date },
+                    };
+
+                    if (workTimes.TryGetValue(date, out string workTime))
+                    {
+                        txtNumber.Text = workTime;
                     }
-                };
-                cellPanel.Controls.Add(txtNumber);
 
-                // Button to expand cell
-                Label btnExpand = new Label
-                {
-                    Text = "Details",
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
-                    Anchor = AnchorStyles.Bottom,
-                    Margin = new Padding(5),
-                    Cursor = Cursors.Hand,
-                    Tag = new {CellDate = date},
-                };
-                btnExpand.Click += CellPanel_Click;
-                cellPanel.Controls.Add(btnExpand);
+                    if (date > DateTime.Now)
+                    {
+                        txtNumber.Enabled = false;
+                        txtNumber.BackColor = Color.LightGray;
+                        txtNumber.BorderStyle = BorderStyle.None;
+                    }
 
-                // Add the cell FlowLayoutPanel to the main flow panel
-                flowPanel.Controls.Add(cellPanel);
-                
+                    txtNumber.KeyPress += TxtNumber_KeyPress;
+
+                    txtNumber.TextChanged += TxtNumber_TextChanged;
+
+                    cellPanel.Controls.Add(txtNumber);
+
+                    Label btnExpand = new Label
+                    {
+                        Text = "Details",
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
+                        Anchor = AnchorStyles.Bottom,
+                        Margin = new Padding(5),
+                        Cursor = Cursors.Hand,
+                        Tag = new { CellDate = date },
+                    };
+                    btnExpand.Click += CellPanel_Click;
+                    cellPanel.Controls.Add(btnExpand);
+
+                    flowPanel.Controls.Add(cellPanel);
+                }
+
+                mainPanel.Controls.Add(flowPanel);
             }
-            
-            // Add the main flow panel to the main panel
-            mainPanel.Controls.Add(flowPanel);
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while populating cells: " + ex.Message);
+            }
         }
+
+        private void TxtNumber_TextChanged(object sender, EventArgs e)
+        {
+            TextBox txt = sender as TextBox;
+            if (string.IsNullOrEmpty(txt.Text))
+            {
+                // Allow empty text
+                txt.Tag = "";
+                return;
+            }
+
+            if (decimal.TryParse(txt.Text, out decimal value) || txt.Text == ".")
+            {
+                // Check if number is less than 24.00
+                if (txt.Text != "." && value >= 24.00m)
+                {
+                    MessageBox.Show("Value must be less than 24.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txt.TextChanged -= TxtNumber_TextChanged; // Temporarily remove handler to avoid recursion
+                    txt.Text = txt.Tag.ToString();
+                    txt.TextChanged += TxtNumber_TextChanged; // Reattach handler
+                }
+                else
+                {
+                    // Valid value, update the tag to the new valid value
+                    txt.Tag = txt.Text;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid number format. Ensure the number is in a correct format.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txt.TextChanged -= TxtNumber_TextChanged;
+                txt.Text = txt.Tag.ToString();
+                txt.TextChanged += TxtNumber_TextChanged;
+            }
+
+            // Move the cursor to the end of the text
+            txt.SelectionStart = txt.Text.Length;
+        }
+
+        private void TxtNumber_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Allow control keys (backspace, delete, etc.)
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+            // Allow only digits and decimal point
+            if (!char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private Dictionary<DateTime, string> FetchWorkTimes(string projectName)
+        {
+            var workTimes = new Dictionary<DateTime, string>();
+
+            string query = @"
+        SELECT Work_day_date, Work_time
+        FROM Worktime
+        WHERE Project_ID = (SELECT Project_ID FROM Projects WHERE Project_name = ?)
+        AND Work_day_date BETWEEN 
+        (SELECT MIN(Project_creation_date) FROM Projects WHERE Project_name = ?)
+        AND 
+        (SELECT MAX(Project_end) FROM Projects WHERE Project_name = ?)";
+
+            try
+            {
+                using (OdbcConnection connection = new OdbcConnection(connectionString))
+                {
+                    connection.Open();
+                    using (OdbcCommand command = new OdbcCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Project_name1", projectName);
+                        command.Parameters.AddWithValue("@Project_name2", projectName);
+                        command.Parameters.AddWithValue("@Project_name3", projectName);
+
+                        using (OdbcDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var date = reader.GetDateTime(reader.GetOrdinal("Work_day_date"));
+                                var workTime = reader["Work_time"].ToString();
+                                workTimes[date] = workTime;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
+            }
+
+            // Debug output to check the contents of the dictionary
+            StringBuilder sb = new StringBuilder();
+            foreach (var kvp in workTimes)
+            {
+                sb.AppendLine($"Date: {kvp.Key}, Work Time: {kvp.Value}");
+            }
+            MessageBox.Show(sb.ToString(), "Work Times");
+
+            return workTimes;
+        }
+
+        /*
+        private string GetWorkTime(DateTime workDayDate, string projectName)
+        {
+            string workTime = null;
+
+            // SQL query to get the Work_time value based on Work_day_date and Project_name
+            string query = @"
+        SELECT Work_time 
+        FROM WorkTime 
+        INNER JOIN Projects ON WorkTime.Project_ID = Projects.Project_ID
+        WHERE Work_day_date = ? AND Project_name = ?";
+
+            // Initialize the connection using the connection string
+            using (OdbcConnection connection = new OdbcConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (OdbcCommand command = new OdbcCommand(query, connection))
+                    {
+                        // Add parameters in the order they appear in the SQL query
+                        command.Parameters.AddWithValue("@Work_day_date", workDayDate);
+                        command.Parameters.AddWithValue("@Project_name", projectName);
+
+                        using (OdbcDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                workTime = reader["Work_time"].ToString();
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle the exception as needed
+                    MessageBox.Show("An error occurred: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            return workTime;
+        }
+        */
 
         private void ClearDynamicCells()
         {
@@ -174,22 +324,23 @@ namespace Time_Tracker
 
         //
         //Data update in window
-        private void UpdateDateRangeLabel()
+        private async void UpdateDateRangeLabel()
         {
+            SelectedProjectName = comboBox1.Text;
             // Update the label text with the selected date range
             DateSelecter.Text = startDate.ToString("d/MMM/yy") + " - " + endDate.ToString("d/MMM/yy");
             ClearDynamicCells();
-            CreateDynamicCells(startDate, endDate);
+            await PopulateDynamicCellsAsync(startDate, endDate, SelectedProjectName);
             ClearCalendar();
             PopulateCalendar(startDate, endDate);
-            
+
             ScrollToPosition(mainPanel);
             ScrollToPosition(mainPanel2);
         }
 
         private void ScrollToPosition(FlowLayoutPanel flowPanel)
         {
-            if (flowPanel == mainPanel)  
+            if (flowPanel == mainPanel)
                 foreach (Control control in flowPanel.Controls)
                     foreach (Control control2 in control.Controls)
                         if (((dynamic)control2.Tag).CellDate == DateTime.Now.Date.AddDays(2))
@@ -197,24 +348,15 @@ namespace Time_Tracker
                             flowPanel.ScrollControlIntoView(control2);
                         }
 
-            /*
-            // button.Tag= new [name] {Count = btnCount, FileName=soundFfilepath);
-            // int count=((dynamic)button.Tag).Count;
-            // string filename = ((dynamic)button.Tag).FileName;
-            // flowPanel.HorizontalScroll.Equals(CellPositionX);
-            // control2.FindForm().PointToClient(control2.Parent.PointToScreen(control2.Location));
-            */
-
-
-            if (flowPanel == mainPanel2)            
+            if (flowPanel == mainPanel2)
                 foreach (Control control in flowPanel.Controls)
                     foreach (Control control2 in control.Controls)
-                        foreach (Control control3 in control2.Controls)                            
+                        foreach (Control control3 in control2.Controls)
                             if (((dynamic)control3.Tag).CellDate == DateTime.Now.Date)
                             {
                                 flowPanel.ScrollControlIntoView(control3);
                             }
-            
+
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -299,7 +441,7 @@ namespace Time_Tracker
                 Tag = new { CellDate = date } // To keep track of expanded state
             };
 
-            
+
             // Create an inner FlowLayoutPanel to manage the layout of child controls
             FlowLayoutPanel innerPanel1 = new FlowLayoutPanel
             {
@@ -314,7 +456,7 @@ namespace Time_Tracker
                 Tag = new { CellDate = date }
             };
             innerPanel1.Click += CellPanel_Click;
-            
+
 
             // Date label
             Label lblDate1 = new Label
@@ -324,7 +466,7 @@ namespace Time_Tracker
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Microsoft Sans Serif", 18, FontStyle.Bold),
                 AutoSize = true,
-                Margin = new Padding(5,0,5,0),
+                Margin = new Padding(5, 0, 5, 0),
                 Cursor = Cursors.Hand,
                 Tag = new { CellDate = date }
             };
@@ -348,12 +490,12 @@ namespace Time_Tracker
 
             // Attach the click event handler
             cellPanel1.Click += CellPanel_Click;
-            
+
             // Add the inner panel to the cell panel
             cellPanel1.Controls.Add(innerPanel1);
 
             return cellPanel1;
-            
+
         }
 
         private Panel CreateBlankCellPanel()
@@ -367,7 +509,7 @@ namespace Time_Tracker
                 Tag = false // To keep track of expanded state
             };
         }
-        
+
         private void ClearCalendar()
         {
             foreach (Control control in mainPanel2.Controls)
@@ -376,7 +518,7 @@ namespace Time_Tracker
                 control.Dispose();
             }
         }
-        
+
         //
         // This is the event handler method for cell clicks
         private void CellPanel_Click(object sender, EventArgs e)
@@ -394,7 +536,7 @@ namespace Time_Tracker
         {
             SelectedCellDate = date;
             Form2 form = new Form2();
-            if(SelectedProjectName == "")
+            if (SelectedProjectName == "")
             {
                 MessageBox.Show("Selected project before using datailed view", "No project selected", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -411,21 +553,20 @@ namespace Time_Tracker
             }
         }
 
-
         //
         //Window controls
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton1.Checked)
             {
-                tableLayoutPanel3.Enabled = true;
-                tableLayoutPanel3.Visible = true;
+                DayLayoutPanel.Enabled = true;
+                DayLayoutPanel.Visible = true;
                 radioButton2.Checked = false;
             }
             else
             {
-                tableLayoutPanel3.Enabled = false;
-                tableLayoutPanel3.Visible = false;
+                DayLayoutPanel.Enabled = false;
+                DayLayoutPanel.Visible = false;
             }
             UpdateDateRangeLabel();
         }
@@ -434,14 +575,14 @@ namespace Time_Tracker
         {
             if (radioButton2.Checked)
             {
-                tableLayoutPanel4.Enabled = true;
-                tableLayoutPanel4.Visible = true;
+                MonthLayoutPanel.Enabled = true;
+                MonthLayoutPanel.Visible = true;
                 radioButton1.Checked = false;
             }
             else
             {
-                tableLayoutPanel4.Enabled = false;
-                tableLayoutPanel4.Visible = false;
+                MonthLayoutPanel.Enabled = false;
+                MonthLayoutPanel.Visible = false;
             }
             UpdateDateRangeLabel();
         }
@@ -471,373 +612,34 @@ namespace Time_Tracker
             UpdateDateRangeLabel();
         }
 
-
-        //
-        //Loading db data to programm
-        private void LoadingData_toSystem()
+        private void HideAllInMainWindow()
         {
-            string SelectedTable = "Users";
-            string SelectedColumns = "*";
-            string Conditions = "WHERE User_name = " + CurrentUser;
-            connection.Open();
-            using (OdbcCommand GetUserData = new OdbcCommand(GetODBCData, connection))
+            foreach (Control control in MainWindow.Controls)
             {
-                // Add parameters to the command
-                GetUserData.Parameters.AddWithValue("@SelectedTableName", SelectedTable);
-                GetUserData.Parameters.AddWithValue("@SelectedColmnName", SelectedColumns);
-                GetUserData.Parameters.AddWithValue("@SetConditionsForRequest", Conditions);
-
-                // Execute the command
-                int rowsAffected = GetUserData.ExecuteNonQuery();
-                MessageBox.Show($"{rowsAffected} rows updated.");
-            }
-            //
-            /*
-                 using (OdbcCommand command = new OdbcCommand(LoadGetODBCData, connection))
-                        {
-                            // Add parameters to the command
-                            command.Parameters.AddWithValue("@SelectedColmnName", SelectedColumns);
-                            command.Parameters.AddWithValue("@SelectedTableName", SelectedTable);
-                            command.Parameters.AddWithValue("@SetConditionsForRequest", Conditions);
-
-                            // Execute the command
-                            int rowsAffected = command.ExecuteNonQuery();
-                            MessageBox.Show($"{rowsAffected} rows updated.");
-                        }
-
-            ///
-
-                using (OdbcCommand GetUserData = new OdbcCommand(GetODBCData, connection))
-                    {
-                        while (LastUserTime.Read())
-                        {
-                            mem = LastUserTime.GetString(0);
-                        }
-                    }
-                    label3.Text = mem.ToString();
-            */
-            //Loading data from DB
-            try
-            {
-                string SelectedTable = "WorkTime";
-                string SelectedColumns = "*";
-                string Conditions = "WHERE User_ID = ";
-                connection.Open();
-                using (OdbcCommand GetUserData = new OdbcCommand(GetODBCData, connection))
-                {
-                    // Add parameters to the command
-                    GetUserData.Parameters.AddWithValue("@SelectedTableName", SelectedTable);
-                    GetUserData.Parameters.AddWithValue("@SelectedColmnName", SelectedColumns);
-                    GetUserData.Parameters.AddWithValue("@SetConditionsForRequest", Conditions);
-
-                    // Execute the command
-                    int rowsAffected = GetUserData.ExecuteNonQuery();
-                    MessageBox.Show($"{rowsAffected} rows updated.");
-                }
-            }
-            catch (Exception ex)
-            {
-                label3.Text = "00:00:00";
-            }
-            finally
-            {
-                connection.Close();
+                control.Enabled = false;
+                control.Visible = false;
             }
         }
 
-
-        /*
-        private void RefreshTaskTable()
+        private void CalendarButton_Click(object sender, EventArgs e)
         {
-            string SelectedProjectName = null;
-            if (comboBox1.SelectedItem != null)
-            {
-                SelectedProjectName = comboBox1.Text;
-            }
-            BindingSource bs = new BindingSource();
-            bs.DataSource = dataGridView1.DataSource;
-            bs.Filter = "Assigned_project like '%" + SelectedProjectName + "%' AND Assigned_user like '%" + label1.Text + "%'";
-            dataGridView1.DataSource = bs.DataSource;
+            HideAllInMainWindow();
+            CalendarPanel.Visible = true;
+            CalendarPanel.Enabled = true;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void TasksButton_Click(object sender, EventArgs e)
         {
-            RefreshTaskTable();
-            Refresh_counter();
-        }
-        private void Refresh_counter()
-        {
-            var SelectedProject = comboBox1.Text;
-            var CurentUser = label1.Text;
-            var mem = "00:00:00";
-            string UserTime = "SELECT Time_spent FROM [" + SelectedProject + "] WHERE Work_day = Date() AND User_name = '" + CurentUser + "'";
-            //
-            //Loading user time spent on this project today
-            OdbcCommand GetUserTime = new OdbcCommand(UserTime, connection);
-            try
-            {
-                connection.Open();
-                using (OdbcDataReader LastUserTime = GetUserTime.ExecuteReader())
-                {
-                    while (LastUserTime.Read())
-                    {
-                        mem = LastUserTime.GetString(0);
-                    }
-                }
-                label3.Text = mem.ToString();
-            }
-            catch (Exception ex)
-            {
-                label3.Text = "00:00:00";
-            }
-            finally
-            {
-                connection.Close();
-            }
+            HideAllInMainWindow();
+            TasksPanel.Visible = true;
+            TasksPanel.Enabled = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void NotesButton_Click(object sender, EventArgs e)
         {
-            //set up var to operate in btn click
-            var SelectedProject = comboBox1.Text;
-            var CurentUser = label1.Text;
-            var WorkTime = label3.Text;
-            var WorkStart = System.DateTime.Now.ToString("HH:mm:ss");
-            string RegistredUser = null;
-            string RecentData = null;
-            bool TableExist = false;
-            //
-            //preparing SQL queries for data compare
-            string GetUserData = "SELECT User_name FROM Users WHERE User_name = '" + CurentUser + "'";
-            string GetRecentRecords_FromThisUser = "SELECT COUNT(*) FROM Work_time WHERE Work_day_date = Date() AND User_name = '" + CurentUser + "'";
-            string GetProjectRecords_FromThisUser = "SELECT COUNT(*) FROM ["+ SelectedProject + "] WHERE Work_day = Date() AND User_name = '" + CurentUser + "'";
-            string TableCheck = "select * FROM [" + SelectedProject + "]";
-            //
-            // Open the connection to DB
-            connection.Open();
-            //
-            //selected project check
-            try
-            {
-                using (OdbcCommand SelectedTable = new OdbcCommand(TableCheck, connection))
-                {
-                    //Look in DB for a table
-                    SelectedTable.ExecuteScalar();
-                    TableExist = true;
-                    //                  
-                    //set up queries using Odbc
-                    OdbcCommand UserDBCheck = new OdbcCommand(GetUserData, connection);
-                    OdbcCommand RecentRecords = new OdbcCommand(GetRecentRecords_FromThisUser, connection);
-                    OdbcCommand ProjectRecords = new OdbcCommand(GetProjectRecords_FromThisUser, connection);
-                    //
-                    //Bring to display stop button
-                    button2.Visible = true;
-                    button2.Enabled = true;
-                    //
-                    //Hide start button
-                    button1.Enabled = false;
-                    button1.Visible = false;
-                    //
-                    //executing prepared queries
-                    //
-                    //checking User table in DB for current user
-                    OdbcDataReader ConectingUser = UserDBCheck.ExecuteReader();
-                    //
-                    //
-                    //checking Work_time table in DB for user today records
-                    int RecentUserRecords = (int)RecentRecords.ExecuteScalar();
-                    //
-                    //
-                    //checking Work_time table in DB for user today records
-                    int RecentProjectRecords = (int)ProjectRecords.ExecuteScalar();
-                    //
-
-
-
-                    while (ConectingUser.Read())
-                    {
-                        RegistredUser = ConectingUser.GetString(0);
-                    }
-                    ConectingUser.Close();
-                    //
-                    //
-                    //work time update sys
-                    //
-                    timer2.Tick += (s, ev) =>
-                        {
-                            // Parse the label's text as a TimeSpan
-                            TimeSpan currentTime = TimeSpan.ParseExact(label3.Text, "hh\\:mm\\:ss", null);
-
-                            // Add one second to the current time
-                            TimeSpan newTime = currentTime.Add(TimeSpan.FromSeconds(1));
-
-                            // Format the new time as a string in the format 00:00:00
-                            string formattedTime = newTime.ToString("hh\\:mm\\:ss");
-
-                            // Update the label's text with the new time
-                            label3.Text = formattedTime;
-                        };
-
-                    //checking for aprop data
-
-                    //user in db check
-
-                    if (RegistredUser != "none")
-                    {
-
-                        comboBox1.Enabled = false;
-                        //activating counters for livetime system functionality
-                        timer1.Start();
-                        timer2.Start();
-
-                        //checking for records for current user in current day
-
-                        if (RecentUserRecords == 0 && RecentProjectRecords == 0)
-                        {
-
-                            // Construct the SQL query to insert data to selected 'Project' table
-                            string query_set_ProjectWorkTime = "INSERT INTO [" + SelectedProject + "] ([Work_day], [User_name], [Time_spent])" +
-                                                                                    " VALUES ( date() , '" + CurentUser + "', '00:00:00')";
-                            // Construct the SQL query to insert data to Work_time table
-                            string query_set_UserWorkTime = "INSERT INTO [Work_time] ([Work_day_date], [User_name], [Project_name], [Work_time_start], [Work_time_end])" +
-                                                                    " VALUES ( date(), '" + CurentUser + "', '" + SelectedProject + "', '" + WorkStart + "', '00:00:00')";
-
-                            try
-                            {
-                                // Create a commands object for sending data
-                                OdbcCommand createData_Project = new OdbcCommand(query_set_ProjectWorkTime, connection);
-                                OdbcCommand createData_WorkTime = new OdbcCommand(query_set_UserWorkTime, connection);
-
-                                // Execute the command
-                                createData_Project.ExecuteNonQuery();
-                                createData_WorkTime.ExecuteNonQuery();
-
-                                //MessageBox.Show("Data inserted successfully!");
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show("Error: " + ex.Message, "conection error", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("You are continuing the work, good luck!", "Resuming work", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-                        }
-
-                    }
-                    else
-                    {
-                        MessageBox.Show("You are not registred in DB ", "Unregistered user", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-                    }
-
-                }
-
-            }
-            catch
-            {
-                TableExist = false;
-                MessageBox.Show("No such project are created", "Not valid project selected", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-            }
-            connection.Close();     
+            HideAllInMainWindow();
+            NotesPanel.Visible = true;
+            NotesPanel.Enabled = true;
         }
-
-        private void UpdateData(object sender, EventArgs e)
-        {
-            
-            //geting values for functions
-            var CurentUser = label1.Text;
-            var SelectedProject = comboBox1.Text;
-
-            //seting up sql queries
-            string WorkTimeUpdate = "UPDATE [Work_time] SET [Work_time_end] = Date() WHERE [Work_day_date] = date() AND [User_name] = '"+ CurentUser + "'";
-            string ProjectTimeUpdate = "UPDATE [" + SelectedProject + "] SET [Time_spent] = DateAdd('s',5,[Time_spent]) WHERE Work_day = date() AND User_name = '" + CurentUser + "'";
-            //exequte queries
-            OdbcCommand UpdateWorkTime = new OdbcCommand(WorkTimeUpdate, connection);
-            OdbcCommand UpdateProjectTime = new OdbcCommand(ProjectTimeUpdate, connection);
-
-            
-            try
-            {
-                //conecting to DB
-                connection.Open();
-                UpdateWorkTime.ExecuteNonQuery();
-                UpdateProjectTime.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                //closing connection to DB
-                connection.Close();
-            }
-            
-            //MessageBox.Show("connection succes", "some text", MessageBoxButtons.OK, MessageBoxIcon.Warning,MessageBoxDefaultButton.Button1,MessageBoxOptions.DefaultDesktopOnly);
-            
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            //Bring to display start button
-            button1.Visible = true;
-            button1.Enabled = true;
-            //
-            //Hide stop button
-            button2.Enabled = false;
-            button2.Visible = false;
-            //
-            //Enabeling project selection
-            comboBox1.Enabled = true;
-            //
-            //Stop programm timers
-            timer1.Stop();
-            timer2.Stop();
-            
-            //sending final data
-            Stop_work();
-        }
-
-        private void Stop_work()
-        {
-            //Seting up var for queries
-            var WorkEnd = System.DateTime.Now.ToString("HH:mm:ss");
-            var TotalWorkTime = label3.Text;
-            var CurentUser = label1.Text;
-            var SelectedProject = comboBox1.Text;
-            //
-            //Seting up queries
-            string Q_WorkEnd = "UPDATE [Work_time] SET [Work_time_end] = '" + WorkEnd + "' WHERE [Work_day_date] = date() AND [User_name] = '"+ CurentUser + "'";
-            string Q_TotalWorkTime = "UPDATE [" + SelectedProject + "] SET [Time_spent] = '" + TotalWorkTime + "' WHERE Work_day = date() AND User_name = '" + CurentUser + "'";
-            //
-            //
-            OdbcCommand SendWorkEnd = new OdbcCommand(Q_WorkEnd, connection);
-            OdbcCommand SendTotalWorkTime = new OdbcCommand(Q_TotalWorkTime, connection);
-            //
-            //Exquite queries
-            try
-            {
-                connection.Open();
-                SendWorkEnd.ExecuteNonQuery();
-                SendTotalWorkTime.ExecuteNonQuery();
-            }
-            catch (Exception ex) 
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                connection.Close();
-            }
-
-        }
-
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            //sending final data
-            Stop_work();
-        }
-        */
-
     }
 }

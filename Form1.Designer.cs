@@ -75,6 +75,8 @@ namespace Time_Tracker
             this.ManageUsersButtonText = new System.Windows.Forms.Label();
             this.CalendarPanel = new System.Windows.Forms.Panel();
             this.MainWindow = new System.Windows.Forms.Panel();
+            this.workTimeTableAdapter1 = new Time_Tracker.DataSet1TableAdapters.WorkTimeTableAdapter();
+            this.usersTableAdapter1 = new Time_Tracker.DataSet1TableAdapters.UsersTableAdapter();
             ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             this.panel1.SuspendLayout();
@@ -227,7 +229,7 @@ namespace Time_Tracker
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(533, 63);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(532, 63);
             this.flowLayoutPanel1.TabIndex = 23;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -423,11 +425,11 @@ namespace Time_Tracker
             this.flowLayoutPanel2.Controls.Add(this.label7);
             this.flowLayoutPanel2.Controls.Add(this.comboBox1);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(533, 0);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(532, 0);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(617, 63);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(616, 63);
             this.flowLayoutPanel2.TabIndex = 22;
             this.flowLayoutPanel2.WrapContents = false;
             // 
@@ -437,7 +439,7 @@ namespace Time_Tracker
             this.tableLayoutPanel5.ColumnCount = 3;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.35317F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.64683F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 636F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 638F));
             this.tableLayoutPanel5.Controls.Add(this.flowLayoutPanel1, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.flowLayoutPanel2, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Top;
@@ -581,6 +583,14 @@ namespace Time_Tracker
             this.MainWindow.Size = new System.Drawing.Size(641, 612);
             this.MainWindow.TabIndex = 30;
             // 
+            // workTimeTableAdapter1
+            // 
+            this.workTimeTableAdapter1.ClearBeforeFill = true;
+            // 
+            // usersTableAdapter1
+            // 
+            this.usersTableAdapter1.ClearBeforeFill = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -673,6 +683,8 @@ namespace Time_Tracker
         private FlowLayoutPanel ManageUsersButton;
         private Label ManageUsersButtonText;
         private Panel MainWindow;
+        private DataSet1TableAdapters.WorkTimeTableAdapter workTimeTableAdapter1;
+        private DataSet1TableAdapters.UsersTableAdapter usersTableAdapter1;
     }
 }
 

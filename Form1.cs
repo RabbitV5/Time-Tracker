@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Time_Tracker.DataSet1TableAdapters;
 
 namespace Time_Tracker
 {
@@ -38,7 +39,15 @@ namespace Time_Tracker
         {
             // TODO: This line of code loads data into the 'dataSet1.Projects' table. You can move, or remove it, as needed.
             this.projectsTableAdapter.Fill(this.dataSet1.Projects);
-
+            this.workTimeTableAdapter1.Fill(this.dataSet1.WorkTime);
+            /*
+            SELECT       WorkTime.Work_ID, WorkTime.User_ID, WorkTime.Project_ID, WorkTime.Task_ID, WorkTime.Work_day_date, WorkTime.Work_time, WorkTime.IsVerified, WorkTime.Manager_verified, WorkTime.Verification_date, 
+                        WorkTime.Holyday_ID
+            FROM            WorkTime, Projects, Users
+            WHERE        WorkTime.Project_ID = (SELECT Project_ID FROM Projects WHERE  Project_name = @SelectedProject )AND WorkTime.User_ID = (SELECT User_ID FROM Users WHERE  User_name = @CurrentUser )
+             */
+            
+            MessageBox.Show(workTimeTableAdapter1.ToString());
             radioButton1.Checked = true;
             label1.Text = CurrentUser;
             comboBox1.Text = "";
@@ -254,64 +263,10 @@ namespace Time_Tracker
                 MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
             }
 
-            // Debug output to check the contents of the dictionary
-            StringBuilder sb = new StringBuilder();
-            foreach (var kvp in workTimes)
-            {
-                sb.AppendLine($"Date: {kvp.Key}, Work Time: {kvp.Value}");
-            }
-            MessageBox.Show(sb.ToString(), "Work Times");
-
             return workTimes;
         }
 
-        /*
-        private string GetWorkTime(DateTime workDayDate, string projectName)
-        {
-            string workTime = null;
-
-            // SQL query to get the Work_time value based on Work_day_date and Project_name
-            string query = @"
-        SELECT Work_time 
-        FROM WorkTime 
-        INNER JOIN Projects ON WorkTime.Project_ID = Projects.Project_ID
-        WHERE Work_day_date = ? AND Project_name = ?";
-
-            // Initialize the connection using the connection string
-            using (OdbcConnection connection = new OdbcConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(query, connection))
-                    {
-                        // Add parameters in the order they appear in the SQL query
-                        command.Parameters.AddWithValue("@Work_day_date", workDayDate);
-                        command.Parameters.AddWithValue("@Project_name", projectName);
-
-                        using (OdbcDataReader reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                workTime = reader["Work_time"].ToString();
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Log or handle the exception as needed
-                    MessageBox.Show("An error occurred: " + ex.Message);
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            return workTime;
-        }
-        */
+        
 
         private void ClearDynamicCells()
         {

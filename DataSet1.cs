@@ -1,6 +1,8 @@
-﻿namespace Time_Tracker {
-    
-    
-    public partial class DataSet1 {
+﻿namespace Time_Tracker
+{
+
+
+    public partial class DataSet1
+    {
     }
 }

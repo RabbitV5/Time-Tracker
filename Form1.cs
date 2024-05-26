@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Odbc;
 using System.Drawing;
 using System.Globalization;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Time_Tracker.DataSet1TableAdapters;
 
 namespace Time_Tracker
 {
@@ -15,7 +15,7 @@ namespace Time_Tracker
         //
         //preset data
         private static DateTime Today_date = DateTime.Now;
-        private static string connectionString = "Driver={MICROSOFT ACCESS DRIVER (*.mdb, *.accdb)}; Dsn=Enterprise_DB;dbq=D:\\Навчання\\4 курс\\Диплом\\Project\\Main_Base\\enterprise.accdb;driverid=25;fil=MS Access;maxbuffersize=2048;pagetimeout=5";
+        private static string connectionString = "Driver={MICROSOFT ACCESS DRIVER (*.mdb, *.accdb)}; Dsn=Enterprise_DB;dbq=D:\\Навчання\\4 курс\\Диплом\\Project\\Main_Base\\enterprise.accdb";
         OdbcConnection connection = new OdbcConnection(connectionString);
         private DateTime startDate = new DateTime(Today_date.Year, Today_date.Month, 1); // Default start date
         private DateTime endDate = new DateTime(Today_date.Year, (Today_date.Month + 1), 1).AddDays(-1); // Default end date
@@ -39,21 +39,27 @@ namespace Time_Tracker
         {
             // TODO: This line of code loads data into the 'dataSet1.Projects' table. You can move, or remove it, as needed.
             this.projectsTableAdapter.Fill(this.dataSet1.Projects);
-            this.workTimeTableAdapter1.Fill(this.dataSet1.WorkTime);
-            /*
-            SELECT       WorkTime.Work_ID, WorkTime.User_ID, WorkTime.Project_ID, WorkTime.Task_ID, WorkTime.Work_day_date, WorkTime.Work_time, WorkTime.IsVerified, WorkTime.Manager_verified, WorkTime.Verification_date, 
-                        WorkTime.Holyday_ID
-            FROM            WorkTime, Projects, Users
-            WHERE        WorkTime.Project_ID = (SELECT Project_ID FROM Projects WHERE  Project_name = @SelectedProject )AND WorkTime.User_ID = (SELECT User_ID FROM Users WHERE  User_name = @CurrentUser )
-             */
             
-            MessageBox.Show(workTimeTableAdapter1.ToString());
             radioButton1.Checked = true;
             label1.Text = CurrentUser;
             comboBox1.Text = "";
 
             UpdateDateRangeLabel();
-            
+            PopulateNotesForCurrentUserAsync();
+        }
+
+        private int GetUserID()
+        {
+            using (connection)
+            {
+                connection.Open();
+                string query = "SELECT User_ID FROM Users WHERE User_name = ?";
+                using (OdbcCommand command = new OdbcCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@User_name", CurrentUser);
+                    return (int)command.ExecuteScalar();
+                }
+            }
         }
 
         //
@@ -78,6 +84,7 @@ namespace Time_Tracker
             try
             {
                 var workTimes = FetchWorkTimes(projectName);
+                var verifiedTimes = FetchVerifiedTimes(projectName);
 
                 for (int i = 0; i < totalDays; i++)
                 {
@@ -124,7 +131,6 @@ namespace Time_Tracker
                         Margin = new Padding(5),
                         TextAlign = HorizontalAlignment.Center,
                         Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
-                        Tag = new { CellDate = date },
                     };
 
                     if (workTimes.TryGetValue(date, out string workTime))
@@ -138,6 +144,18 @@ namespace Time_Tracker
                         txtNumber.BackColor = Color.LightGray;
                         txtNumber.BorderStyle = BorderStyle.None;
                     }
+                    
+                    if(verifiedTimes.TryGetValue(date, out string verified))
+                    {
+                        if (verified == "True" )
+                        {
+                            txtNumber.Enabled = false;
+                            txtNumber.BackColor = Color.LightGreen;
+                        }
+                    }
+                    
+
+                    txtNumber.Tag = txtNumber.Text;
 
                     txtNumber.KeyPress += TxtNumber_KeyPress;
 
@@ -169,6 +187,121 @@ namespace Time_Tracker
             }
         }
 
+
+
+        private async Task PopulateNotesForCurrentUserAsync()
+        {
+            try
+            {
+                int userID = GetUserID();
+
+                // Fetch data asynchronously
+                await Task.Run(() => notesTableAdapter1.FillByUser_ID(dataSet1.Notes, userID));
+
+                // Bind data to the BindingSource
+                NotesbindingSource1.DataSource = dataSet1.Notes;
+
+                foreach (DataRow row in dataSet1.Notes.Rows)
+                {
+                    var creationDate = row["Creation_date"].ToString();
+                    var noteName = row["Note_name"].ToString();
+                    var noteTheme = row["Note_theme"].ToString();
+                    var content = row["Content"].ToString();
+                    var relatedDate = row["Related_date"].ToString();
+
+                    Panel noteBoxBorder = new Panel
+                    {
+                        BorderStyle = BorderStyle.FixedSingle,
+                        Width = 370,
+                        Height = 150,
+                        Margin = new Padding(5),
+                        MinimumSize = new Size(370, 150),
+                        Tag = new { CellOpend = false }
+                    };
+
+                    TableLayoutPanel tableLayoutPanel = new TableLayoutPanel
+                    {
+                        RowCount = 3,
+                        ColumnCount = 2,
+                        Dock = DockStyle.Fill,
+                        CellBorderStyle = TableLayoutPanelCellBorderStyle.None
+                    };
+
+                    // Set row heights
+                    tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F)); // First row
+                    tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F)); // Second row
+                    tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Third row
+
+                    // Set column widths
+                    tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 86F)); // First column
+                    tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 14F)); // Second column
+
+                    noteBoxBorder.Controls.Add(tableLayoutPanel);
+
+                    // First row
+                    Label lblName = new Label
+                    {
+                        Text = noteName,
+                        Anchor = AnchorStyles.Left,
+                        AutoSize = true,
+                        Font = new Font("Microsoft Sans Serif", 10, FontStyle.Regular),
+                    };
+                    tableLayoutPanel.Controls.Add(lblName, 0, 0);
+
+                    Label lblCreationDate = new Label
+                    {
+                        Text = creationDate.ToString(),
+                        Anchor = AnchorStyles.Left,
+                        AutoSize = true,
+                        Font = new Font("Microsoft Sans Serif", 10, FontStyle.Regular),
+                    };
+                    tableLayoutPanel.Controls.Add(lblCreationDate, 1, 0);
+
+                    // Second row
+                    Label lblTheme = new Label
+                    {
+                        Text = noteTheme,
+                        Anchor = AnchorStyles.Left,
+                        AutoSize = true,
+                        Font = new Font("Microsoft Sans Serif", 10, FontStyle.Regular),
+                    };
+                    tableLayoutPanel.Controls.Add(lblTheme, 0, 1);
+
+                    Label lblRelatedDate = new Label
+                    {
+                        Text = relatedDate,
+                        Anchor = AnchorStyles.Left,
+                        AutoSize = true,
+                        Font = new Font("Microsoft Sans Serif", 10, FontStyle.Regular),
+                    };
+                    tableLayoutPanel.Controls.Add(lblRelatedDate, 1, 1);
+
+                    // Third row
+                    Label lblContent = new Label
+                    {
+                        Text = content,
+                        Anchor = AnchorStyles.Left,
+                        AutoSize = true,
+                        Font = new Font("Microsoft Sans Serif", 10, FontStyle.Regular),
+                    };
+                    tableLayoutPanel.Controls.Add(lblContent, 0, 2);
+
+                    // Add the TableLayoutPanel to the Panel
+                    noteBoxBorder.Controls.Add(tableLayoutPanel);
+
+                    // Add the Panel to the FlowLayoutPanel
+                    NotesWindow.Controls.Add(noteBoxBorder);
+                }
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show("An error occurred while fetching data: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        //
+        //Cell work time box enter data verification
         private void TxtNumber_TextChanged(object sender, EventArgs e)
         {
             TextBox txt = sender as TextBox;
@@ -179,10 +312,10 @@ namespace Time_Tracker
                 return;
             }
 
-            if (decimal.TryParse(txt.Text, out decimal value) || txt.Text == ".")
+            if (decimal.TryParse(txt.Text, out decimal value))
             {
                 // Check if number is less than 24.00
-                if (txt.Text != "." && value >= 24.00m)
+                if (value >= 24)
                 {
                     MessageBox.Show("Value must be less than 24.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txt.TextChanged -= TxtNumber_TextChanged; // Temporarily remove handler to avoid recursion
@@ -222,18 +355,18 @@ namespace Time_Tracker
             }
         }
 
+
+        //
+        //Saved data for minimise DB load
         private Dictionary<DateTime, string> FetchWorkTimes(string projectName)
         {
-            var workTimes = new Dictionary<DateTime, string>();
+            var workTimes = new Dictionary<DateTime, string>();           
 
             string query = @"
         SELECT Work_day_date, Work_time
         FROM Worktime
         WHERE Project_ID = (SELECT Project_ID FROM Projects WHERE Project_name = ?)
-        AND Work_day_date BETWEEN 
-        (SELECT MIN(Project_creation_date) FROM Projects WHERE Project_name = ?)
-        AND 
-        (SELECT MAX(Project_end) FROM Projects WHERE Project_name = ?)";
+        AND User_ID  =  (SELECT User_ID FROM Users WHERE User_name = ?)";
 
             try
             {
@@ -242,9 +375,8 @@ namespace Time_Tracker
                     connection.Open();
                     using (OdbcCommand command = new OdbcCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@Project_name1", projectName);
-                        command.Parameters.AddWithValue("@Project_name2", projectName);
-                        command.Parameters.AddWithValue("@Project_name3", projectName);
+                        command.Parameters.AddWithValue("@Project_name", projectName);
+                        command.Parameters.AddWithValue("@User_name", CurrentUser);
 
                         using (OdbcDataReader reader = command.ExecuteReader())
                         {
@@ -266,7 +398,108 @@ namespace Time_Tracker
             return workTimes;
         }
 
-        
+        private Dictionary<DateTime, string> FetchVerifiedTimes(string projectName)
+        {
+            var verifiedTime = new Dictionary<DateTime, string>();
+
+            string query = @" SELECT Work_day_date, IsVerified
+            FROM Worktime
+            WHERE Project_ID = (SELECT Project_ID FROM Projects WHERE Project_name = ?)
+            AND User_ID = (SELECT User_ID FROM Users WHERE User_name = ?)";
+            try
+            {
+                using (OdbcConnection connection = new OdbcConnection(connectionString))
+                {
+                    connection.Open();
+                    using (OdbcCommand command = new OdbcCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Project_name", projectName);
+                        command.Parameters.AddWithValue("@User_name", CurrentUser);
+
+                        using (OdbcDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var verified = reader["IsVerified"].ToString();
+                                var date = reader.GetDateTime(reader.GetOrdinal("Work_day_date"));
+                                verifiedTime[date] = verified;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
+            }
+
+            return verifiedTime;
+        }
+
+        private Dictionary<string, DateTime> FetchProjectStartDates()
+        {
+            var ProjectBeginDates = new Dictionary<string, DateTime>();
+
+            string query = @" SELECT Project_name, Project_creation_date
+            FROM Projects";
+            try
+            {
+                using (OdbcConnection connection = new OdbcConnection(connectionString))
+                {
+                    connection.Open();
+                    using (OdbcCommand command = new OdbcCommand(query, connection))
+                    {
+                        using (OdbcDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var name = reader["Project_name"].ToString();
+                                var Start = reader.GetDateTime(reader.GetOrdinal("Project_creation_date"));
+                                ProjectBeginDates[name] = Start;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
+            }
+            return ProjectBeginDates;
+        }
+
+        private Dictionary<string, DateTime> FetchProjectEndDates()
+        {
+            var ProjectEndDates = new Dictionary<string, DateTime>();
+
+            string query = @" SELECT Project_name, Project_end
+            FROM Projects";
+            try
+            {
+                using (OdbcConnection connection = new OdbcConnection(connectionString))
+                {
+                    connection.Open();
+                    using (OdbcCommand command = new OdbcCommand(query, connection))
+                    {
+                        using (OdbcDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var name = reader["Project_name"].ToString();
+                                var End = reader.GetDateTime(reader.GetOrdinal("Project_end"));
+                                ProjectEndDates[name] = End;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
+            }
+            return ProjectEndDates;
+        }
+
 
         private void ClearDynamicCells()
         {
@@ -281,12 +514,9 @@ namespace Time_Tracker
         //Data update in window
         private async void UpdateDateRangeLabel()
         {
-            SelectedProjectName = comboBox1.Text;
             // Update the label text with the selected date range
             DateSelecter.Text = startDate.ToString("d/MMM/yy") + " - " + endDate.ToString("d/MMM/yy");
-            ClearDynamicCells();
             await PopulateDynamicCellsAsync(startDate, endDate, SelectedProjectName);
-            ClearCalendar();
             PopulateCalendar(startDate, endDate);
 
             ScrollToPosition(mainPanel);
@@ -316,9 +546,32 @@ namespace Time_Tracker
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SelectedProjectName = comboBox1.Text;
+            var CheckForBegining = FetchProjectStartDates();
+            var CheckForEnding = FetchProjectEndDates();
+            if (CheckForBegining.TryGetValue(SelectedProjectName, out DateTime ProjectBegining))
+            {
+                if (ProjectBegining.Date >= startDate.Date)
+                {
+                    startDate = new DateTime(ProjectBegining.Year, ProjectBegining.Month, 1);
+                    endDate = new DateTime(ProjectBegining.Year, (ProjectBegining.Month + 1), 1).AddDays(-1);
+                    buttonPrevious.Visible = false;
+                    buttonPrevious.Enabled = false;
+                }
+            }
+            if (CheckForEnding.TryGetValue(SelectedProjectName, out DateTime ProjectEnding))
+            {
+                if (ProjectEnding.Date <= endDate.Date)
+                {
+                    startDate = new DateTime(ProjectEnding.Year, ProjectEnding.Month, 1);
+                    endDate = new DateTime(ProjectEnding.Year, (ProjectEnding.Month + 1), 1).AddDays(-1);
+                    buttonNext.Visible = false;
+                    buttonNext.Enabled = false;
+                }
+            }
             UpdateDateRangeLabel();
         }
-
+        
         //
         //create cells Form-2 in window
         private void PopulateCalendar(DateTime startDate, DateTime endDate)
@@ -544,19 +797,55 @@ namespace Time_Tracker
 
         private void buttonPrevious_Click(object sender, EventArgs e)
         {
+            var CheckForBegining = FetchProjectStartDates();
+            var CheckForEnding = FetchProjectEndDates();
             // Set the start and end dates one week earlier
             startDate = startDate.AddMonths(-1);
             // Calculate the end date for the new month
             endDate = new DateTime(startDate.Year, startDate.Month, DateTime.DaysInMonth(startDate.Year, startDate.Month));
+            if (CheckForBegining.TryGetValue(SelectedProjectName, out DateTime ProjectBegining))
+            {
+                if (ProjectBegining.Date >= startDate.Date)
+                {
+                    buttonPrevious.Enabled = false;
+                    buttonPrevious.Visible = false;
+                }                
+            }
+            if (CheckForEnding.TryGetValue(SelectedProjectName, out DateTime ProjectEnding))
+            {
+                if (ProjectEnding.Date > endDate.Date)
+                {
+                    buttonNext.Enabled = true;
+                    buttonNext.Visible = true;
+                }
+            }
             UpdateDateRangeLabel();
         }
 
         private void buttonNext_Click(object sender, EventArgs e)
         {
+            var CheckForBegining = FetchProjectStartDates();
+            var CheckForEnding = FetchProjectEndDates();
             // Set the start and end dates one week later
             startDate = startDate.AddMonths(1);
             // Calculate the end date for the new month
             endDate = new DateTime(startDate.Year, startDate.Month, DateTime.DaysInMonth(startDate.Year, startDate.Month));
+            if (CheckForBegining.TryGetValue(SelectedProjectName, out DateTime ProjectBegining))
+            {
+                if (ProjectBegining.Date < startDate.Date)
+                {
+                    buttonPrevious.Enabled = true;
+                    buttonPrevious.Visible = true;
+                }
+            }
+            if (CheckForEnding.TryGetValue(SelectedProjectName, out DateTime ProjectEnding))
+            {
+                if (ProjectEnding.Date <= endDate.Date)
+                {
+                    buttonNext.Enabled = false;
+                    buttonNext.Visible = false;
+                }
+            }
             UpdateDateRangeLabel();
         }
 

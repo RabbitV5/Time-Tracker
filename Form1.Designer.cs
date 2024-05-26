@@ -34,15 +34,13 @@ namespace Time_Tracker
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.projectsBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.dataSet1 = new Time_Tracker.DataSet1();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.label4 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.DateSelecter = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.button4 = new System.Windows.Forms.Button();
+            this.buttonNext = new System.Windows.Forms.Button();
             this.buttonPrevious = new System.Windows.Forms.Button();
             this.TodayBtn = new System.Windows.Forms.Button();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -51,8 +49,6 @@ namespace Time_Tracker
             this.mainPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.projectsBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.projectsTableAdapter = new Time_Tracker.DataSet1TableAdapters.ProjectsTableAdapter();
             this.MonthLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.DayLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.mainPanel = new System.Windows.Forms.FlowLayoutPanel();
@@ -60,7 +56,7 @@ namespace Time_Tracker
             this.flowLayoutPanel4 = new System.Windows.Forms.FlowLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
             this.NotesPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.NotesWindow = new System.Windows.Forms.FlowLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
@@ -75,15 +71,18 @@ namespace Time_Tracker
             this.ManageUsersButtonText = new System.Windows.Forms.Label();
             this.CalendarPanel = new System.Windows.Forms.Panel();
             this.MainWindow = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.NotesbindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.dataSet1 = new Time_Tracker.DataSet1();
+            this.projectsTableAdapter = new Time_Tracker.DataSet1TableAdapters.ProjectsTableAdapter();
             this.workTimeTableAdapter1 = new Time_Tracker.DataSet1TableAdapters.WorkTimeTableAdapter();
             this.usersTableAdapter1 = new Time_Tracker.DataSet1TableAdapters.UsersTableAdapter();
-            ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
+            this.notesTableAdapter1 = new Time_Tracker.DataSet1TableAdapters.NotesTableAdapter();
+            this.projectsBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.panel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource)).BeginInit();
             this.MonthLayoutPanel.SuspendLayout();
             this.DayLayoutPanel.SuspendLayout();
             this.TasksPanel.SuspendLayout();
@@ -97,6 +96,9 @@ namespace Time_Tracker
             this.ManageUsersButton.SuspendLayout();
             this.CalendarPanel.SuspendLayout();
             this.MainWindow.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NotesbindingSource1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -113,7 +115,7 @@ namespace Time_Tracker
             // 
             // comboBox1
             // 
-            this.comboBox1.DataSource = this.projectsBindingSource1;
+            this.comboBox1.DataSource = this.projectsBindingSource;
             this.comboBox1.DisplayMember = "Project_name";
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.comboBox1.FormattingEnabled = true;
@@ -124,16 +126,6 @@ namespace Time_Tracker
             this.comboBox1.TabIndex = 4;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             this.comboBox1.BindingContextChanged += new System.EventHandler(this.Form1_Load);
-            // 
-            // projectsBindingSource1
-            // 
-            this.projectsBindingSource1.DataMember = "Projects";
-            this.projectsBindingSource1.DataSource = this.dataSet1;
-            // 
-            // dataSet1
-            // 
-            this.dataSet1.DataSetName = "DataSet1";
-            this.dataSet1.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // label4
             // 
@@ -175,7 +167,7 @@ namespace Time_Tracker
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.buttonNext);
             this.panel1.Controls.Add(this.buttonPrevious);
             this.panel1.Controls.Add(this.DateSelecter);
             this.panel1.Location = new System.Drawing.Point(195, 15);
@@ -184,16 +176,16 @@ namespace Time_Tracker
             this.panel1.Size = new System.Drawing.Size(289, 34);
             this.panel1.TabIndex = 18;
             // 
-            // button4
+            // buttonNext
             // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button4.Location = new System.Drawing.Point(254, 0);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(35, 34);
-            this.button4.TabIndex = 20;
-            this.button4.Text = ">";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.buttonNext_Click);
+            this.buttonNext.Dock = System.Windows.Forms.DockStyle.Right;
+            this.buttonNext.Location = new System.Drawing.Point(254, 0);
+            this.buttonNext.Name = "buttonNext";
+            this.buttonNext.Size = new System.Drawing.Size(35, 34);
+            this.buttonNext.TabIndex = 20;
+            this.buttonNext.Text = ">";
+            this.buttonNext.UseVisualStyleBackColor = true;
+            this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
             // 
             // buttonPrevious
             // 
@@ -229,7 +221,7 @@ namespace Time_Tracker
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(532, 63);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(531, 63);
             this.flowLayoutPanel1.TabIndex = 23;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -294,10 +286,6 @@ namespace Time_Tracker
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(488, 110);
             this.panel3.TabIndex = 24;
-            // 
-            // projectsTableAdapter
-            // 
-            this.projectsTableAdapter.ClearBeforeFill = true;
             // 
             // MonthLayoutPanel
             // 
@@ -384,27 +372,27 @@ namespace Time_Tracker
             this.NotesPanel.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.NotesPanel.ColumnCount = 1;
             this.NotesPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.NotesPanel.Controls.Add(this.flowLayoutPanel3, 0, 1);
+            this.NotesPanel.Controls.Add(this.NotesWindow, 0, 1);
             this.NotesPanel.Controls.Add(this.label3, 0, 0);
-            this.NotesPanel.Location = new System.Drawing.Point(328, 23);
+            this.NotesPanel.Location = new System.Drawing.Point(316, 379);
             this.NotesPanel.Name = "NotesPanel";
             this.NotesPanel.RowCount = 2;
             this.NotesPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
             this.NotesPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.NotesPanel.Size = new System.Drawing.Size(237, 225);
+            this.NotesPanel.Size = new System.Drawing.Size(594, 451);
             this.NotesPanel.TabIndex = 0;
             // 
-            // flowLayoutPanel3
+            // NotesWindow
             // 
-            this.flowLayoutPanel3.AutoScroll = true;
-            this.flowLayoutPanel3.AutoSize = true;
-            this.flowLayoutPanel3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel3.Location = new System.Drawing.Point(20, 72);
-            this.flowLayoutPanel3.Margin = new System.Windows.Forms.Padding(20, 20, 20, 3);
-            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(197, 150);
-            this.flowLayoutPanel3.TabIndex = 3;
+            this.NotesWindow.AutoScroll = true;
+            this.NotesWindow.AutoSize = true;
+            this.NotesWindow.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.NotesWindow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.NotesWindow.Location = new System.Drawing.Point(20, 72);
+            this.NotesWindow.Margin = new System.Windows.Forms.Padding(20, 20, 20, 3);
+            this.NotesWindow.Name = "NotesWindow";
+            this.NotesWindow.Size = new System.Drawing.Size(554, 376);
+            this.NotesWindow.TabIndex = 3;
             // 
             // label3
             // 
@@ -413,7 +401,7 @@ namespace Time_Tracker
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
             this.label3.Location = new System.Drawing.Point(3, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(231, 52);
+            this.label3.Size = new System.Drawing.Size(588, 52);
             this.label3.TabIndex = 2;
             this.label3.Text = "Notes";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -425,11 +413,11 @@ namespace Time_Tracker
             this.flowLayoutPanel2.Controls.Add(this.label7);
             this.flowLayoutPanel2.Controls.Add(this.comboBox1);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(532, 0);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(531, 0);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Padding = new System.Windows.Forms.Padding(3, 10, 3, 3);
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(616, 63);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(614, 63);
             this.flowLayoutPanel2.TabIndex = 22;
             this.flowLayoutPanel2.WrapContents = false;
             // 
@@ -439,7 +427,7 @@ namespace Time_Tracker
             this.tableLayoutPanel5.ColumnCount = 3;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.35317F));
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.64683F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 638F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 641F));
             this.tableLayoutPanel5.Controls.Add(this.flowLayoutPanel1, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.flowLayoutPanel2, 1, 0);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Top;
@@ -577,11 +565,34 @@ namespace Time_Tracker
             // 
             this.MainWindow.Controls.Add(this.TasksPanel);
             this.MainWindow.Controls.Add(this.CalendarPanel);
-            this.MainWindow.Controls.Add(this.NotesPanel);
             this.MainWindow.Location = new System.Drawing.Point(1044, 149);
             this.MainWindow.Name = "MainWindow";
             this.MainWindow.Size = new System.Drawing.Size(641, 612);
             this.MainWindow.TabIndex = 30;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.GhostWhite;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80.75018F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 19.24982F));
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(622, 118);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(376, 159);
+            this.tableLayoutPanel1.TabIndex = 31;
+            // 
+            // dataSet1
+            // 
+            this.dataSet1.DataSetName = "DataSet1";
+            this.dataSet1.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // projectsTableAdapter
+            // 
+            this.projectsTableAdapter.ClearBeforeFill = true;
             // 
             // workTimeTableAdapter1
             // 
@@ -591,27 +602,35 @@ namespace Time_Tracker
             // 
             this.usersTableAdapter1.ClearBeforeFill = true;
             // 
+            // notesTableAdapter1
+            // 
+            this.notesTableAdapter1.ClearBeforeFill = true;
+            // 
+            // projectsBindingSource
+            // 
+            this.projectsBindingSource.DataMember = "Projects";
+            this.projectsBindingSource.DataSource = this.dataSet1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1787, 1014);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.MainWindow);
+            this.Controls.Add(this.NotesPanel);
             this.Controls.Add(this.TabPanel);
             this.Controls.Add(this.tableLayoutPanel5);
             this.MinimumSize = new System.Drawing.Size(400, 400);
             this.Name = "Form1";
             this.Text = "Time Tracker";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource)).EndInit();
             this.MonthLayoutPanel.ResumeLayout(false);
             this.MonthLayoutPanel.PerformLayout();
             this.DayLayoutPanel.ResumeLayout(false);
@@ -633,6 +652,9 @@ namespace Time_Tracker
             this.ManageUsersButton.PerformLayout();
             this.CalendarPanel.ResumeLayout(false);
             this.MainWindow.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.NotesbindingSource1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.projectsBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -649,7 +671,7 @@ namespace Time_Tracker
         private System.Windows.Forms.Label DateSelecter;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button buttonPrevious;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button buttonNext;
         private System.Windows.Forms.Button TodayBtn;
         private System.Windows.Forms.FlowLayoutPanel mainPanel2;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
@@ -657,16 +679,14 @@ namespace Time_Tracker
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.Panel panel3;
         private GroupBox groupBox1;
-        private BindingSource projectsBindingSource;
         private DataSet1 dataSet1;
-        private BindingSource projectsBindingSource1;
         private DataSet1TableAdapters.ProjectsTableAdapter projectsTableAdapter;
         private FlowLayoutPanel flowLayoutPanel2;
         private Label label2;
         private FlowLayoutPanel flowLayoutPanel4;
         private TableLayoutPanel TasksPanel;
         private TableLayoutPanel NotesPanel;
-        private FlowLayoutPanel flowLayoutPanel3;
+        private FlowLayoutPanel NotesWindow;
         private Label label3;
         private FlowLayoutPanel mainPanel;
         private TableLayoutPanel DayLayoutPanel;
@@ -685,6 +705,10 @@ namespace Time_Tracker
         private Panel MainWindow;
         private DataSet1TableAdapters.WorkTimeTableAdapter workTimeTableAdapter1;
         private DataSet1TableAdapters.UsersTableAdapter usersTableAdapter1;
+        private TableLayoutPanel tableLayoutPanel1;
+        private DataSet1TableAdapters.NotesTableAdapter notesTableAdapter1;
+        private BindingSource NotesbindingSource1;
+        private BindingSource projectsBindingSource;
     }
 }
 

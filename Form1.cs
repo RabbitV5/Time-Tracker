@@ -39,6 +39,8 @@ namespace Time_Tracker
         {
             // TODO: This line of code loads data into the 'dataSet1.Projects' table. You can move, or remove it, as needed.
             this.projectsTableAdapter.Fill(this.dataSet1.Projects);
+            this.workTimeTableAdapter1.Fill(this.dataSet1.WorkTime);
+            this.notesTableAdapter1.Fill(this.dataSet1.Notes);
             
             radioButton1.Checked = true;
             label1.Text = CurrentUser;
@@ -57,6 +59,20 @@ namespace Time_Tracker
                 using (OdbcCommand command = new OdbcCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@User_name", CurrentUser);
+                    return (int)command.ExecuteScalar();
+                }
+            }
+        }
+
+        private int GetProjectID()
+        {
+            using (connection)
+            {
+                connection.Open();
+                string query = "SELECT Project_ID FROM Projects WHERE Project_name = ?";
+                using (OdbcCommand command = new OdbcCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@User_name", SelectedProjectName);
                     return (int)command.ExecuteScalar();
                 }
             }
@@ -83,9 +99,6 @@ namespace Time_Tracker
 
             try
             {
-                var workTimes = FetchWorkTimes(projectName);
-                var verifiedTimes = FetchVerifiedTimes(projectName);
-
                 for (int i = 0; i < totalDays; i++)
                 {
                     var date = startDate.AddDays(i);
@@ -133,10 +146,8 @@ namespace Time_Tracker
                         Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
                     };
 
-                    if (workTimes.TryGetValue(date, out string workTime))
-                    {
-                        txtNumber.Text = workTime;
-                    }
+                    txtNumber.Text = GetWorkTime(date);
+                                       
 
                     if (date > DateTime.Now)
                     {
@@ -269,6 +280,7 @@ namespace Time_Tracker
 
                     Label lblRelatedDate = new Label
                     {
+                        Visible = false,
                         Text = relatedDate,
                         Anchor = AnchorStyles.Left,
                         AutoSize = true,
@@ -355,151 +367,31 @@ namespace Time_Tracker
             }
         }
 
-
-        //
-        //Saved data for minimise DB load
-        private Dictionary<DateTime, string> FetchWorkTimes(string projectName)
+        private string GetWorkTime(DateTime date)
         {
-            var workTimes = new Dictionary<DateTime, string>();           
-
-            string query = @"
-        SELECT Work_day_date, Work_time
-        FROM Worktime
-        WHERE Project_ID = (SELECT Project_ID FROM Projects WHERE Project_name = ?)
-        AND User_ID  =  (SELECT User_ID FROM Users WHERE User_name = ?)";
-
+            string worktime = null;            
             try
             {
-                using (OdbcConnection connection = new OdbcConnection(connectionString))
-                {
-                    connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@Project_name", projectName);
-                        command.Parameters.AddWithValue("@User_name", CurrentUser);
+                int userID = GetUserID();
+                int projectID = GetProjectID();
+                
+                // Fetch data asynchronously
+                workTimeTableAdapter1.FillByUserAndProject(dataSet1.WorkTime, userID, projectID, date);
 
-                        using (OdbcDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var date = reader.GetDateTime(reader.GetOrdinal("Work_day_date"));
-                                var workTime = reader["Work_time"].ToString();
-                                workTimes[date] = workTime;
-                            }
-                        }
-                    }
+                // Bind data to the BindingSource
+                NotesbindingSource1.DataSource = dataSet1.Notes;
+
+                foreach (DataRow row in dataSet1.Notes.Rows)
+                {
+                    worktime = row["Work_time"].ToString();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
+                MessageBox.Show(ex.Message);
             }
-
-            return workTimes;
+            return worktime;
         }
-
-        private Dictionary<DateTime, string> FetchVerifiedTimes(string projectName)
-        {
-            var verifiedTime = new Dictionary<DateTime, string>();
-
-            string query = @" SELECT Work_day_date, IsVerified
-            FROM Worktime
-            WHERE Project_ID = (SELECT Project_ID FROM Projects WHERE Project_name = ?)
-            AND User_ID = (SELECT User_ID FROM Users WHERE User_name = ?)";
-            try
-            {
-                using (OdbcConnection connection = new OdbcConnection(connectionString))
-                {
-                    connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@Project_name", projectName);
-                        command.Parameters.AddWithValue("@User_name", CurrentUser);
-
-                        using (OdbcDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var verified = reader["IsVerified"].ToString();
-                                var date = reader.GetDateTime(reader.GetOrdinal("Work_day_date"));
-                                verifiedTime[date] = verified;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
-            }
-
-            return verifiedTime;
-        }
-
-        private Dictionary<string, DateTime> FetchProjectStartDates()
-        {
-            var ProjectBeginDates = new Dictionary<string, DateTime>();
-
-            string query = @" SELECT Project_name, Project_creation_date
-            FROM Projects";
-            try
-            {
-                using (OdbcConnection connection = new OdbcConnection(connectionString))
-                {
-                    connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(query, connection))
-                    {
-                        using (OdbcDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var name = reader["Project_name"].ToString();
-                                var Start = reader.GetDateTime(reader.GetOrdinal("Project_creation_date"));
-                                ProjectBeginDates[name] = Start;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
-            }
-            return ProjectBeginDates;
-        }
-
-        private Dictionary<string, DateTime> FetchProjectEndDates()
-        {
-            var ProjectEndDates = new Dictionary<string, DateTime>();
-
-            string query = @" SELECT Project_name, Project_end
-            FROM Projects";
-            try
-            {
-                using (OdbcConnection connection = new OdbcConnection(connectionString))
-                {
-                    connection.Open();
-                    using (OdbcCommand command = new OdbcCommand(query, connection))
-                    {
-                        using (OdbcDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var name = reader["Project_name"].ToString();
-                                var End = reader.GetDateTime(reader.GetOrdinal("Project_end"));
-                                ProjectEndDates[name] = End;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while fetching work times: {ex.Message}\n{ex.StackTrace}");
-            }
-            return ProjectEndDates;
-        }
-
 
         private void ClearDynamicCells()
         {
